@@ -5,16 +5,27 @@ The Telegram bot project is a Java-based application that utilizes the OpenWeath
 Technologies used:
 
 I used the following technologies and software packages to develop this project: 
+
 JDK 15.0.1
+
 TelegramBots 6.0.1
+
 Log4j 2
+
 HTTPClient 4.5.13
 
+
 Run:
+
 Connect the required libraries
+
 Run App.java
+
 Find your Bot via @BotUsername in Telegram
+
 Write /start in a chat
+
+Enter your city to receive weather data
 
 A clear example of how the program works:
 ![Снимок экрана 2023-10-05 115315](https://github.com/Vladimir-Runets/MyWeatherBot/assets/108408528/100e1a63-9929-4e9d-b6c3-8b0ff4651946)
