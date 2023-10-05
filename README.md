@@ -27,6 +27,7 @@ Write /start in a chat
 
 Enter your city to receive weather data
 
+
 A clear example of how the program works:
 ![Снимок экрана 2023-10-05 115315](https://github.com/Vladimir-Runets/MyWeatherBot/assets/108408528/100e1a63-9929-4e9d-b6c3-8b0ff4651946)
 
