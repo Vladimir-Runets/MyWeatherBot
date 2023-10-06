@@ -40,4 +40,4 @@ Student of BSU
 Faculty of Applied Mathematics and Informatics
 
 
-Version: 1.0
+Version: 1.1
