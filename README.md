@@ -6,7 +6,7 @@ Technologies used:
 
 I used the following technologies and software packages to develop this project: 
 
-JDK 15.0.1
+JDK 19.0.2
 
 TelegramBots 6.0.1
 
