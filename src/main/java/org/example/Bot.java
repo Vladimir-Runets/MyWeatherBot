@@ -73,64 +73,68 @@ public class Bot extends TelegramLongPollingBot {
             // Creating an HTTP Client
             HttpClient httpClient = HttpClientBuilder.create().build();
 
-        try {
-            // Creating a GET request
-            HttpGet httpGet = new HttpGet(apiUrl);
+            try {
+                // Creating a GET request
+                HttpGet httpGet = new HttpGet(apiUrl);
 
-            // Executing the request
-            HttpResponse response = httpClient.execute(httpGet);
+                // Executing the request
+                HttpResponse response = httpClient.execute(httpGet);
 
-            // Receiving a response as an HTTP entity
-            HttpEntity entity = response.getEntity();
+                // Receiving a response as an HTTP entity
+                HttpEntity entity = response.getEntity();
 
-            if (entity != null) {
-                // Convert HTTP entity to string
-                responseBody = EntityUtils.toString(entity);
+                if (entity != null) {
+                    // Convert HTTP entity to string
+                    responseBody = EntityUtils.toString(entity);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Pattern patternToFindDescription = Pattern.compile("\"description\":\"(.*?)\",");
-        Matcher matcherToFindDescription = patternToFindDescription.matcher(responseBody);
-        while (matcherToFindDescription.find()) {
-            listOfDescriptions.add(matcherToFindDescription.group(1));
-        }
+            if(responseBody.contains("404")){
+                sendText(userId, "I'm sorry =(, but I haven't found anything on your request. Would you like to know the weather for another city?");
+            } else{
+                Pattern patternToFindDescription = Pattern.compile("\"description\":\"(.*?)\",");
+                Matcher matcherToFindDescription = patternToFindDescription.matcher(responseBody);
+                while (matcherToFindDescription.find()) {
+                    listOfDescriptions.add(matcherToFindDescription.group(1));
+                }
 
-        Pattern patternToFindTemperature = Pattern.compile("\"temp\":(.*?),");
-        Matcher matcherToFindTemperature = patternToFindTemperature.matcher(responseBody);
-        while (matcherToFindTemperature.find()) {
-            listOfTemps.add(String.valueOf((int)(Double.parseDouble(matcherToFindTemperature.group(1))-272.5)));
-        }
+                Pattern patternToFindTemperature = Pattern.compile("\"temp\":(.*?),");
+                Matcher matcherToFindTemperature = patternToFindTemperature.matcher(responseBody);
+                while (matcherToFindTemperature.find()) {
+                    listOfTemps.add(String.valueOf((int)(Double.parseDouble(matcherToFindTemperature.group(1))-272.5)));
+                }
 
-        Pattern patternToFindDates = Pattern.compile("\"dt_txt\":\"(.*?)\\s");
-        Matcher matcherToFindDates = patternToFindDates.matcher(responseBody);
-        while (matcherToFindDates.find()) {
-            LocalDate date = LocalDate.parse(matcherToFindDates.group(1));
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, MMMM, dd", Locale.ENGLISH);
-            String formattedDate = date.format(formatter);
-            listOfDates.add(formattedDate);
-        }
+                Pattern patternToFindDates = Pattern.compile("\"dt_txt\":\"(.*?)\\s");
+                Matcher matcherToFindDates = patternToFindDates.matcher(responseBody);
+                while (matcherToFindDates.find()) {
+                    LocalDate date = LocalDate.parse(matcherToFindDates.group(1));
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, MMMM, dd", Locale.ENGLISH);
+                    String formattedDate = date.format(formatter);
+                    listOfDates.add(formattedDate);
+                }
 
-        Pattern patternToFindTimes = Pattern.compile("\"dt_txt\":\"\\d{4}-\\d{2}-\\d{2}\\s(.*?):\\d{2}\"");
-        Matcher matcherToFindTimes = patternToFindTimes.matcher(responseBody);
-        while (matcherToFindTimes.find()) {
-            listOfTimes.add(matcherToFindTimes.group(1));
-        }
+                Pattern patternToFindTimes = Pattern.compile("\"dt_txt\":\"\\d{4}-\\d{2}-\\d{2}\\s(.*?):\\d{2}\"");
+                Matcher matcherToFindTimes = patternToFindTimes.matcher(responseBody);
+                while (matcherToFindTimes.find()) {
+                    listOfTimes.add(matcherToFindTimes.group(1));
+                }
 
-        sendText(userId,"The temperature in " + text + " is following:\n");
-        for (int i = 0; i < listOfDescriptions.size(); i++) {
-            finalText.append(listOfDates.get(i)).append(":\n");
-            String thisDay = listOfDates.get(i);
-            while(thisDay.equals(listOfDates.get(i))){
-                weatherIconCode = WeatherUtils.findTheRequiredIconCode(listOfDescriptions.get(i));
-                finalText.append("\t\t\t\t\t").append(listOfTimes.get(i)).append(": ").append(listOfTemps.get(i)).append("°С, ").append(listOfDescriptions.get(i)).append(weatherIconCode).append("\n");
-                i++;
-                if(i == listOfDates.size()) break;
+                sendText(userId,"The temperature in " + text + " is following:\n");
+                for (int i = 0; i < listOfDescriptions.size(); i++) {
+                    finalText.append(listOfDates.get(i)).append(":\n");
+                    String thisDay = listOfDates.get(i);
+                    while(thisDay.equals(listOfDates.get(i))){
+                        weatherIconCode = WeatherUtils.findTheRequiredIconCode(listOfDescriptions.get(i));
+                        finalText.append("\t\t\t\t\t").append(listOfTimes.get(i)).append(": ").append(listOfTemps.get(i)).append("°С, ").append(listOfDescriptions.get(i)).append(weatherIconCode).append("\n");
+                        i++;
+                        if(i == listOfDates.size()) break;
+                    }
+                    i--;
+                    sendText(userId, finalText.toString());
+                    finalText = new StringBuilder();
+                }
             }
-            i--;
-            sendText(userId, finalText.toString());
-            finalText = new StringBuilder();
-        }
         }
     }
 }
